@@ -1,0 +1,38 @@
+{
+  "name": "meghana-sukamanchi-fashion-designer",
+  "version": "1.0.0",
+  "description": "Elegant fashion designer portfolio website for Meghana Sukamanchi - Bespoke clothing designer in Hyderabad, India",
+  "main": "index.html",
+  "scripts": {
+    "dev": "python -m http.server 8000",
+    "start": "python -m http.server 8000",
+    "build": "echo 'Static site - no build step required'",
+    "deploy": "vercel --prod"
+  },
+  "keywords": [
+    "fashion-designer",
+    "bespoke-clothing",
+    "portfolio",
+    "meghana-sukamanchi",
+    "hyderabad",
+    "elegant-design",
+    "responsive",
+    "animations"
+  ],
+  "author": {
+    "name": "Meghana Sukamanchi",
+    "email": "teammeghanasukamanchi@gmail.com",
+    "url": "https://instagram.com/meghanasukamanchi.label"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/username/meghana-sukamanchi-fashion.git"
+  },
+  "homepage": "https://meghana-sukamanchi-fashion.vercel.app",
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "devDependencies": {},
+  "dependencies": {}
+}
