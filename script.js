@@ -1,5 +1,146 @@
+// ===== CLOUD-BASED ADMIN CONTENT INTEGRATION =====
+async function loadAdminContent() {
+    console.log('🌐 Loading content from cloud storage...');
+    
+    let websiteContent = null;
+    
+    try {
+        // First try to load from cloud
+        if (window.cloudManager) {
+            const cloudResult = await window.cloudManager.loadContent();
+            if (cloudResult.success) {
+                websiteContent = cloudResult.data;
+                console.log('✅ Content loaded from cloud:', websiteContent);
+                
+                // Cache to localStorage for offline fallback
+                localStorage.setItem('websiteContent', JSON.stringify(websiteContent));
+            }
+        }
+        
+        // Fallback to localStorage if cloud fails
+        if (!websiteContent) {
+            const localContent = localStorage.getItem('websiteContent');
+            if (localContent) {
+                websiteContent = JSON.parse(localContent);
+                console.log('📱 Using local storage fallback');
+            }
+        }
+    } catch (error) {
+        console.error('❌ Error loading content:', error);
+        return;
+    }
+    
+    if (!websiteContent) {
+        console.log('ℹ️ No content found in cloud or local storage');
+        return;
+    }
+
+    // Update hero section
+    if (websiteContent.hero) {
+        const heroTitle = document.querySelector('.hero-title');
+        const heroSubtitle = document.querySelector('.hero-subtitle');
+        const heroTagline = document.querySelector('.hero-tagline');
+        const heroSection = document.querySelector('.hero');
+
+        if (heroTitle) heroTitle.textContent = websiteContent.hero.title;
+        if (heroSubtitle) heroSubtitle.textContent = websiteContent.hero.subtitle;
+        if (heroTagline) heroTagline.textContent = websiteContent.hero.tagline;
+        
+        if (heroSection && websiteContent.hero.background) {
+            heroSection.style.background = `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.5)), url('${websiteContent.hero.background}')`;
+            heroSection.style.backgroundSize = 'cover';
+            heroSection.style.backgroundPosition = 'center';
+            heroSection.style.backgroundAttachment = 'fixed';
+        }
+    }
+
+    // Update about section
+    if (websiteContent.about) {
+        const aboutTitle = document.querySelector('.about-text h3');
+        const aboutParagraphs = document.querySelectorAll('.about-text p');
+        const aboutImage = document.querySelector('.designer-photo');
+
+        if (aboutTitle) aboutTitle.textContent = websiteContent.about.title;
+        if (aboutParagraphs[0]) aboutParagraphs[0].textContent = websiteContent.about.description1;
+        if (aboutParagraphs[1]) aboutParagraphs[1].textContent = websiteContent.about.description2;
+        if (aboutImage) aboutImage.src = websiteContent.about.image;
+    }
+
+    // Update contact information
+    if (websiteContent.contact) {
+        // Update phone numbers
+        const phoneElements = document.querySelectorAll('[href*="tel"], [href*="wa.me"]');
+        phoneElements.forEach(el => {
+            if (el.href.includes('tel:')) {
+                el.href = `tel:${websiteContent.contact.phone.replace(/\s+/g, '')}`;
+            } else if (el.href.includes('wa.me')) {
+                const phoneNumber = websiteContent.contact.phone.replace(/[\s\-\+]/g, '');
+                el.href = `https://wa.me/${phoneNumber}`;
+            }
+        });
+
+        // Update email
+        const emailElements = document.querySelectorAll('[href*="mailto"]');
+        emailElements.forEach(el => {
+            el.href = `mailto:${websiteContent.contact.email}`;
+        });
+
+        // Update displayed contact info
+        const phoneDisplay = document.querySelector('.contact-details p');
+        const emailDisplay = document.querySelectorAll('.contact-details p')[1];
+        const locationDisplay = document.querySelectorAll('.contact-details p')[2];
+
+        if (phoneDisplay) phoneDisplay.textContent = websiteContent.contact.phone;
+        if (emailDisplay) emailDisplay.textContent = websiteContent.contact.email;
+        if (locationDisplay) locationDisplay.textContent = websiteContent.contact.location;
+
+        // Update Instagram links
+        const instagramLinks = document.querySelectorAll('[href*="instagram"]');
+        instagramLinks.forEach(el => {
+            el.href = `https://instagram.com/${websiteContent.contact.instagram}`;
+        });
+    }
+
+    // Update portfolio items
+    if (websiteContent.portfolio) {
+        updatePortfolioItems(websiteContent.portfolio);
+    }
+    
+    console.log('✅ Website content updated successfully!');
+}
+
+function updatePortfolioItems(portfolioData) {
+    const portfolioGrid = document.querySelector('.portfolio-grid');
+    if (!portfolioGrid) return;
+
+    portfolioGrid.innerHTML = '';
+    
+    portfolioData.forEach(item => {
+        const portfolioItem = document.createElement('div');
+        portfolioItem.className = 'portfolio-item';
+        portfolioItem.setAttribute('data-category', item.category);
+        
+        portfolioItem.innerHTML = `
+            <div class="portfolio-image">
+                <img src="${item.image}" alt="${item.title}" class="portfolio-img">
+                <div class="portfolio-overlay">
+                    <h4>${item.title}</h4>
+                    <p>${item.category.charAt(0).toUpperCase() + item.category.slice(1)}</p>
+                </div>
+            </div>
+        `;
+        
+        portfolioGrid.appendChild(portfolioItem);
+    });
+}
+
 // ===== SMOOTH SCROLLING & NAVIGATION =====
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
+    // Load initial content from cloud
+    console.log('🚀 Initializing cloud sync...');
+    await loadAdminContent();
+    
+    // Real-time sync is handled by cloud-manager.js autoSync
     // Mobile menu toggle
     const hamburger = document.querySelector('.hamburger');
     const navMenu = document.querySelector('.nav-menu');

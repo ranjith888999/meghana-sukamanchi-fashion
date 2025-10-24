@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Meghana Sukamanchi</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            color: #333;
+        }
+
+        .admin-header {
+            background: linear-gradient(135deg, #2c2c2c 0%, #1a1a1a 100%);
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .admin-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            color: #d4af37;
+        }
+
+        .admin-user {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logout-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: #c82333;
+        }
+
+        .admin-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .admin-nav {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .nav-tab {
+            background: none;
+            border: none;
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .nav-tab.active {
+            color: #d4af37;
+            border-bottom-color: #d4af37;
+        }
+
+        .nav-tab:hover {
+            color: #d4af37;
+        }
+
+        .tab-content {
+            display: none;
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-section {
+            margin-bottom: 2rem;
+        }
+
+        .form-section h3 {
+            color: #2c3e50;
+            margin-bottom: 1rem;
+            font-family: 'Playfair Display', serif;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #d4af37;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #d4af37, #f4d03f);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            margin-right: 1rem;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+            box-shadow: 0 5px 15px rgba(108, 117, 125, 0.3);
+        }
+
+        .portfolio-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .portfolio-card {
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .portfolio-card:hover {
+            border-color: #d4af37;
+            box-shadow: 0 5px 15px rgba(212, 175, 55, 0.2);
+        }
+
+        .portfolio-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .portfolio-info {
+            padding: 1rem;
+        }
+
+        .portfolio-info input {
+            margin-bottom: 0.5rem;
+        }
+
+        .success-message,
+        .error-message {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .preview-section {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border: 1px solid #e9ecef;
+        }
+
+        .preview-section h4 {
+            color: #2c3e50;
+            margin-bottom: 1rem;
+        }
+
+        .image-upload-area {
+            border: 2px dashed #d4af37;
+            border-radius: 10px;
+            padding: 2rem;
+            text-align: center;
+            background: #f8f9fa;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .image-upload-area:hover {
+            background: #f0f0f0;
+        }
+
+        .image-upload-area.dragover {
+            background: rgba(212, 175, 55, 0.1);
+            border-color: #f4d03f;
+        }
+
+        @media (max-width: 768px) {
+            .admin-container {
+                padding: 1rem;
+            }
+            
+            .admin-nav {
+                flex-wrap: wrap;
+            }
+            
+            .portfolio-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-header">
+        <h1 class="admin-title">Admin Dashboard</h1>
+        <div class="admin-user">
+            <span>Welcome, <strong id="adminUsername">Ranjith</strong></span>
+            <button class="logout-btn" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+        </div>
+    </div>
+
+    <div class="admin-container">
+        <nav class="admin-nav">
+            <button class="nav-tab active" onclick="showTab('hero')">Hero Section</button>
+            <button class="nav-tab" onclick="showTab('about')">About Section</button>
+            <button class="nav-tab" onclick="showTab('portfolio')">Portfolio</button>
+            <button class="nav-tab" onclick="showTab('contact')">Contact Info</button>
+            <button class="nav-tab" onclick="showTab('preview')">Preview Changes</button>
+        </nav>
+
+        <!-- Success/Error Messages -->
+        <div id="successMessage" class="success-message">
+            <i class="fas fa-check-circle"></i> Content updated successfully!
+        </div>
+        <div id="errorMessage" class="error-message">
+            <i class="fas fa-exclamation-circle"></i> Error updating content. Please try again.
+        </div>
+
+        <!-- Hero Section Tab -->
+        <div id="hero" class="tab-content active">
+            <h2>Hero Section Management</h2>
+            <form id="heroForm" class="form-section">
+                <h3><i class="fas fa-star"></i> Hero Content</h3>
+                
+                <div class="form-group">
+                    <label for="heroTitle">Main Title</label>
+                    <input type="text" id="heroTitle" name="heroTitle" value="Meghana Sukamanchi">
+                </div>
+                
+                <div class="form-group">
+                    <label for="heroSubtitle">Subtitle</label>
+                    <input type="text" id="heroSubtitle" name="heroSubtitle" value="Fashion Designer">
+                </div>
+                
+                <div class="form-group">
+                    <label for="heroTagline">Tagline</label>
+                    <input type="text" id="heroTagline" name="heroTagline" value="Keeping it classy and elegant">
+                </div>
+
+                <div class="form-group">
+                    <label for="heroBackground">Background Image URL</label>
+                    <input type="url" id="heroBackground" name="heroBackground" 
+                           value="https://images.unsplash.com/photo-1558769132-cb1aea458c5e?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80">
+                </div>
+                
+                <button type="submit" class="btn">
+                    <i class="fas fa-save"></i> Save Hero Changes
+                </button>
+            </form>
+        </div>
+
+        <!-- About Section Tab -->
+        <div id="about" class="tab-content">
+            <h2>About Section Management</h2>
+            <form id="aboutForm" class="form-section">
+                <h3><i class="fas fa-user"></i> About Content</h3>
+                
+                <div class="form-group">
+                    <label for="aboutTitle">About Title</label>
+                    <input type="text" id="aboutTitle" name="aboutTitle" value="Elegant Fashion, Timeless Design">
+                </div>
+                
+                <div class="form-group">
+                    <label for="aboutDescription1">First Description Paragraph</label>
+                    <textarea id="aboutDescription1" name="aboutDescription1">Welcome to the world of bespoke fashion where elegance meets craftsmanship. I am Meghana Sukamanchi, a passionate fashion designer based in Hyderabad, India, dedicated to creating timeless pieces that celebrate individual style and sophistication.</textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="aboutDescription2">Second Description Paragraph</label>
+                    <textarea id="aboutDescription2" name="aboutDescription2">My design philosophy centers around keeping it classy and elegant, creating bespoke clothing that not only fits perfectly but tells a story. Each piece is meticulously crafted with attention to detail, ensuring that my clients feel confident and beautiful.</textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="aboutImage">About Image URL</label>
+                    <input type="url" id="aboutImage" name="aboutImage" 
+                           value="https://images.unsplash.com/photo-1558769132-cb1aea458c5e?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80">
+                </div>
+                
+                <button type="submit" class="btn">
+                    <i class="fas fa-save"></i> Save About Changes
+                </button>
+            </form>
+        </div>
+
+        <!-- Portfolio Tab -->
+        <div id="portfolio" class="tab-content">
+            <h2>Portfolio Management</h2>
+            <div class="form-section">
+                <h3><i class="fas fa-images"></i> Portfolio Items</h3>
+                <div class="portfolio-grid" id="portfolioGrid">
+                    <!-- Portfolio items will be loaded here -->
+                </div>
+                <button type="button" class="btn" onclick="addPortfolioItem()">
+                    <i class="fas fa-plus"></i> Add New Portfolio Item
+                </button>
+            </div>
+        </div>
+
+        <!-- Contact Tab -->
+        <div id="contact" class="tab-content">
+            <h2>Contact Information Management</h2>
+            <form id="contactForm" class="form-section">
+                <h3><i class="fas fa-address-book"></i> Contact Details</h3>
+                
+                <div class="form-group">
+                    <label for="phone">Phone/WhatsApp Number</label>
+                    <input type="tel" id="phone" name="phone" value="+91 8885932353">
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" value="teammeghanasukamanchi@gmail.com">
+                </div>
+                
+                <div class="form-group">
+                    <label for="location">Location</label>
+                    <input type="text" id="location" name="location" value="Hyderabad, India">
+                </div>
+                
+                <div class="form-group">
+                    <label for="instagram">Instagram Handle</label>
+                    <input type="text" id="instagram" name="instagram" value="meghanasukamanchi.label">
+                </div>
+                
+                <button type="submit" class="btn">
+                    <i class="fas fa-save"></i> Save Contact Changes
+                </button>
+            </form>
+        </div>
+
+        <!-- Preview Tab -->
+        <div id="preview" class="tab-content">
+            <h2>Preview Changes</h2>
+            <div class="preview-section">
+                <h4><i class="fas fa-eye"></i> Current Website Preview</h4>
+                <p>Click the button below to open your website in a new tab and see all changes.</p>
+                <br>
+                <button type="button" class="btn" onclick="previewWebsite()">
+                    <i class="fas fa-external-link-alt"></i> Open Website Preview
+                </button>
+                <button type="button" class="btn btn-secondary" onclick="exportData()">
+                    <i class="fas fa-download"></i> Export All Data
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="cloud-manager.js"></script>
+    <script src="admin-script.js"></script>
+</body>
+</html>
