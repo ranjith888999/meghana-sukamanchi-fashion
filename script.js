@@ -132,6 +132,9 @@ function updatePortfolioItems(portfolioData) {
         
         portfolioGrid.appendChild(portfolioItem);
     });
+    
+    // Re-initialize portfolio filters after content is loaded
+    initializePortfolioFilters();
 }
 
 // ===== SMOOTH SCROLLING & NAVIGATION =====
@@ -249,32 +252,73 @@ style.textContent = `
 document.head.appendChild(style);
 
 // ===== PORTFOLIO FILTER =====
-document.addEventListener('DOMContentLoaded', function() {
+function initializePortfolioFilters() {
+    console.log('🎯 Initializing portfolio filters...');
+    
     const filterButtons = document.querySelectorAll('.filter-btn');
     const portfolioItems = document.querySelectorAll('.portfolio-item');
     
+    console.log(`Found ${filterButtons.length} filter buttons and ${portfolioItems.length} portfolio items`);
+    
+    // Remove existing event listeners to prevent duplicates
     filterButtons.forEach(button => {
+        const newButton = button.cloneNode(true);
+        button.parentNode.replaceChild(newButton, button);
+    });
+    
+    // Re-select buttons after cloning
+    const newFilterButtons = document.querySelectorAll('.filter-btn');
+    
+    newFilterButtons.forEach(button => {
         button.addEventListener('click', function() {
             const filter = this.getAttribute('data-filter');
+            console.log(`🎯 Filtering by: ${filter}`);
             
             // Remove active class from all buttons
-            filterButtons.forEach(btn => btn.classList.remove('active'));
+            newFilterButtons.forEach(btn => btn.classList.remove('active'));
             // Add active class to clicked button
             this.classList.add('active');
             
+            // Get current portfolio items (they might be dynamic)
+            const currentPortfolioItems = document.querySelectorAll('.portfolio-item');
+            
             // Filter portfolio items
-            portfolioItems.forEach(item => {
+            currentPortfolioItems.forEach(item => {
                 const category = item.getAttribute('data-category');
+                console.log(`Item category: ${category}, Filter: ${filter}`);
                 
                 if (filter === 'all' || category === filter) {
                     item.style.display = 'block';
-                    item.style.animation = 'fadeInScale 0.5s ease forwards';
+                    item.style.opacity = '0';
+                    item.style.transform = 'scale(0.8)';
+                    
+                    // Animate in
+                    setTimeout(() => {
+                        item.style.transition = 'all 0.5s ease';
+                        item.style.opacity = '1';
+                        item.style.transform = 'scale(1)';
+                    }, 50);
                 } else {
-                    item.style.display = 'none';
+                    item.style.transition = 'all 0.3s ease';
+                    item.style.opacity = '0';
+                    item.style.transform = 'scale(0.8)';
+                    
+                    // Hide after animation
+                    setTimeout(() => {
+                        item.style.display = 'none';
+                    }, 300);
                 }
             });
         });
     });
+}
+
+// Initialize filters when DOM is ready
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize filters for any existing portfolio items
+    setTimeout(() => {
+        initializePortfolioFilters();
+    }, 1000); // Wait for content to load
 });
 
 // Add fadeInScale animation
